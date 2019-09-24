@@ -4,8 +4,8 @@
 /*
  ===================================================
  Name         : keygen-me-1
- Author		  : Panagiotis Giannoulis aka WhiteRos13
- Version	  : 1.0
+ Author       : Panagiotis Giannoulis aka WhiteRose13
+ Version      : 1.0
  Description  : KeyGenerator in C
  ===================================================
 
@@ -79,13 +79,12 @@ bool validate_key(char sol[], int o)
 void permute(char  a[], int l, int r)  
 {  
     if (l == r) {
-		if (validate_key(a, r+1)){
-			for (int i = 0; i <= r; i++)
-				printf("%c", a[i]);
-			printf("\n");
-		}
+	if (validate_key(a, r+1)) {
+		for (int i = 0; i <= r; i++)
+			printf("%c", a[i]);
+		printf("\n");
 	}
-
+    }
     else
     {  
         for (int i = l; i <= r; i++)  
