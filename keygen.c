@@ -1,3 +1,21 @@
+// DANGER: VERY SLOPPY - BAD CODE.
+// Please Wear Appropriate Eye Protection.
+
+/*
+ ===================================================
+ Name         : keygen-me-1
+ Author		  : Panagiotis Giannoulis aka WhiteRos13
+ Version	  : 1.0
+ Description  : KeyGenerator in C
+ ===================================================
+
+*/
+
+// Finds all permutations of 26 uppercase letters and 9 numbers 
+// and checks if they are valid, considering the assembly code of
+// --activate-- 
+
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -7,9 +25,13 @@ void swap(char *xp, char *yp)
     *xp = *yp;
     *yp = temp;
 }
+
 int ord(int c)
 {
 
+	// 9's ascii value is 57
+	// 7's ascii value is 55
+	// 0's ascii value is 48
 	if (c > 57)
 		c -= 55;
 	else 
@@ -19,7 +41,11 @@ int ord(int c)
 
 }
 
-bool check(char sol[], int o)
+
+// validate_key function is just doing what assembly code of activate raw file did. 
+// Until now, I don't understand the meaning of those things.
+// However, it produces the right keys.
+bool validate_key(char sol[], int o)
 {
 	int i = 0;
 	unsigned long long x = 0;
@@ -52,9 +78,8 @@ bool check(char sol[], int o)
 
 void permute(char  a[], int l, int r)  
 {  
-    // Base case  
     if (l == r) {
-		if (check(a, r+1)){
+		if (validate_key(a, r+1)){
 			for (int i = 0; i <= r; i++)
 				printf("%c", a[i]);
 			printf("\n");
@@ -63,17 +88,13 @@ void permute(char  a[], int l, int r)
 
     else
     {  
-        // Permutations made  
         for (int i = l; i <= r; i++)  
         {  
   
-            // Swapping done  
             swap(&a[l], &a[i]);  
   
-            // Recursion called  
             permute(a, l+1, r);  
   
-            //backtrack  
             swap(&a[l], &a[i]);  
         }  
     }  
@@ -96,9 +117,12 @@ char * combinations(char poss_data[], char sol[], int start, int end, int index,
 
 int main ()
 {
-	char poss[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D','E','F','G', '@', '/'};//,'H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+	//func_validation_key is ignored
+	//Accepts only a key with uppercase letters of English alphabet or numbers 0 - 9
+
+	char poss[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 	char sol[16];
-	combinations(poss, sol, 0, 18, 0, 16); 
+	combinations(poss, sol, 0, 35, 0, 16); 
 
 		
 	return 0;
