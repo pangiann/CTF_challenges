@@ -4,7 +4,7 @@
 /*
  ===================================================
  Name         : keygen-me-1
- Author       : Panagiotis Giannoulis aka WhiteRose13
+ Author       : WhiteRose13 aka Panagiotis Giannoulis 
  Version      : 1.0
  Description  : KeyGenerator in C
  ===================================================
