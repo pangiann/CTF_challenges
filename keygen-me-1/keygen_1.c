@@ -76,40 +76,34 @@ bool validate_key(char sol[], int o)
 	return false;
 }
 
-void permute(char  a[], int l, int r)  
+void permute_with_repetition(char  sol[], char arr[], int index, int k)  
 {  
-    if (l == r) {
-	if (validate_key(a, r+1)) {
-		for (int i = 0; i <= r; i++)
-			printf("%c", a[i]);
-		printf("\n");
-	}
-    }
-    else
-    {  
-        for (int i = l; i <= r; i++)  
-        {  
-  
-            swap(&a[l], &a[i]);  
-  
-            permute(a, l+1, r);  
-  
-            swap(&a[l], &a[i]);  
-        }  
-    }  
+	for (int i = 0; i <= k; i++) {
+		sol[index] = arr[i];
+
+		if (index == k) {
+			if( validate_key(sol, k + 1))
+					printf("%s\n", sol);
+		}
+		else
+			permute_with_repetition(sol, arr, index + 1, k);
+
+
+	}  
 }  
   
 
-char * combinations(char poss_data[], char sol[], int start, int end, int index, int k)
+char * combinations(char poss_data[], char arr[], int start, int end, int index, int k)
 {
 	if (index == k) {
-		permute(sol,0, 15);
-		return sol;
+		char sol[16];
+		permute_with_repetition(sol, arr, 0, 15);
+		return arr;
 	}
 	
 	for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
-		sol[index] = poss_data[i];
-		combinations(poss_data, sol, i + 1, end, index + 1, k);
+		arr[index] = poss_data[i];
+		combinations(poss_data, arr, i + 1, end, index + 1, k);
 	}
 }
 
