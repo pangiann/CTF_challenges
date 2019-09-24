@@ -113,6 +113,8 @@ int main ()
 	//func_validation_key is ignored
 	//Accepts only a key with uppercase letters of English alphabet or numbers 0 - 9
 
+	//first we need to choose from 36 only 16 possible characters
+	//then we need to find all permutations with repetition of them.
 	char poss[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 	char sol[16];
 	combinations(poss, sol, 0, 35, 0, 16); 
