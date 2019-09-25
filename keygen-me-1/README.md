@@ -23,7 +23,7 @@
 
 ``` check_valid_key() ```
   - Returns true if length of our key is 16 and
-  - each one of the key's characters passes check_valid_char()
+  - each one of the key's characters pass check_valid_char()
   
 ``` ord() ```
   - If digit, returns digit as an integer
