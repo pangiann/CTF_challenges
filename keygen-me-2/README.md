@@ -27,25 +27,22 @@ The difference here is that in validate_key() there are 12 constraints(functions
 If all of them return true we have found the right key.
 
 Example of a key_constraint func:
-
->    key_constraint01(char sol[]) 
->
->    {
->
->        return (ord(sol[0]) + ord(sol[1]))%36 == 14
->
->    }
-> 
+```C
+key_constraint01(char sol[]) 
+{
+     return (ord(sol[0]) + ord(sol[1]))%36 == 14
+}
+```
 
 ## keygen2:
 
 Download the files and then just run:
-
+```bash
 >./keygen2
-
+```
 Close the program with Ctrl-c(or wait it to finish) and pick a valid key.
 Then run:
-
+```
 > ./activate [valid key]
-
+```
 Congrats! The flag will appear in your terminal.
