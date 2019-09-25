@@ -20,18 +20,23 @@
 ``` check_valid_char() ```
   - Returns true if character is a digit (0 - 9)
   - Returns true if character is an uppercase english letter ('A' - 'Z')
+
 ``` check_valid_key() ```
   - Returns true if length of our key is 16 and
   - each one of the key's characters passes check_valid_char()
+  
 ``` ord() ```
   - If digit, returns digit as an integer
   - If letter decreases character's ascii value by 55 and returns the result
+
 ``` validate_key() ```
   - Calls ord for every character
   - Sums up the results
   - Operate sum modulo 36
   - Returns true if the result is equal to the ord(16th caracter)
-```Cbool validate_key(char sol[], int last)
+
+```C
+bool validate_key(char sol[], int last)
 {
 	int i = 0;
 	int x = 0;
