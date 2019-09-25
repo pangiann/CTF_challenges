@@ -43,7 +43,6 @@ int ord(int c)
 
 // The tricky part about validate_key is to notice that this function actually operates a modulo with 36. 
 // If we use gdb we'll see that multiplying by 0x38e38e39h and right shifting 3 bits results in division by 36.
-// However, it produces the right keys.
 bool validate_key(char sol[], int last)
 {
 	int i = 0;
