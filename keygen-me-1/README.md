@@ -36,7 +36,7 @@
   - Returns true if the result is equal to the ord(16th caracter)
 
 ```C
-bool validate_key(char sol[], int last)
+bool validate_key(char sol[])
 {
 	int i = 0;
 	int x = 0;
