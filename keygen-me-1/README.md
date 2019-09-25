@@ -16,16 +16,45 @@
   - Try to understand what main and other functions(check_valid_key, validate_key etc.) do
   - Then try to convert assembly code to c - language
   - Last but not least, create a script in whatever language you want to generate all valid keys
+# Solution:
+``` check_valid_char() ```
+  - Returns true if character is a digit (0 - 9)
+  - Returns true if character is an uppercase english letter ('A' - 'Z')
+``` check_valid_key() ```
+  - Returns true if length of our key is 16 and
+  - each one of the key's characters passes check_valid_char()
+``` ord() ```
+  - If digit, returns digit as an integer
+  - If letter decreases character's ascii value by 55 and returns the result
+``` validate_key() ```
+  - Calls ord for every character
+  - Sums up the results
+  - Operate sum modulo 36
+  - Returns true if the result is equal to the ord(16th caracter)
+```Cbool validate_key(char sol[], int last)
+{
+	int i = 0;
+	int x = 0;
+	for (i = 0; i < LENGTH - 1; i++)
+		x += (ord((int) sol[i]) + 1) * (i + 1);
+	x %= 36;
+	int res = ord(sol[LENGTH - 1]);
+	if (x == res)
+		return true;
+	return false;
+}
+```
   
+
 ## keygen1:
 
 Download the files and then just run:
-
->./keygen 
-
+```bash
+> ./keygen 
+```
 Close the program with Ctrl-c and pick a valid key.
 Then run:
-
+```bash
 > ./activate [valid key]
-
+```
 Congrats! The flag will appear in your terminal.
