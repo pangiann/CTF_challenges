@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#define VALID 36
+#define LENGTH 16
 void swap(char *xp, char *yp)
 {
     char temp = *xp;
@@ -33,35 +35,25 @@ int ord(int c)
 	// 7's ascii value is 55
 	// 0's ascii value is 48
 	if (c > 57)
-		c -= 55;
-	else 
-		c -= 48;
-
-	return  c;
+		return c - 55;
+	return c - 48;
 
 }
 
 
-// validate_key function is just doing what assembly code of activate raw file did. 
-// Until now, I don't understand the meaning of those things.
+// The tricky part about validate_key is to notice that this function actually operates a modulo with 36. 
+// If we use gdb we'll see that multiplying by 0x38e38e39h and right shifting 3 bits results in division by 36.
 // However, it produces the right keys.
-bool validate_key(char sol[], int o)
+bool validate_key(char sol[], int last)
 {
 	int i = 0;
-	unsigned long long x = 0;
-	int m = 0;
-	while (i < o) {
+	int x = 0;
+	for (i = 0; i < LENGTH - 1; i++)
+		x += (ord((int) sol[i]) + 1) * (i + 1);
+		
 
-
-		x += m;
-		m = ord((int) sol[i]);
-
-
-		m++;
-		i++;
-		m *= i;
-	}
-
+//	Below we see what assembly is doing
+/*
 	long long  y = 954437177;
 	unsigned long long  z = x * y;
 	z = z >> 32;
@@ -70,7 +62,11 @@ bool validate_key(char sol[], int o)
 	k += z;
 	k = k << 2;
 	x -= k;
-	int res = ord(sol[15]);
+	
+*/
+	//As mentioned above, we found out that the whole operation is a modulo with 36
+	x %= 36;
+	int res = ord(sol[LENGTH - 1]);
 	if (x == res)
 		return true;
 	return false;
@@ -78,11 +74,11 @@ bool validate_key(char sol[], int o)
 
 void permute_with_repetition(char  sol[], char arr[], int index, int k)  
 {  
-	for (int i = 0; i <= k; i++) {
+	for (int i = 0; i < k; i++) {
 		sol[index] = arr[i];
 
-		if (index == k) {
-			if( validate_key(sol, k + 1))
+		if (index == k - 1) {
+			if( validate_key(sol, k))
 					printf("%s\n", sol);
 		}
 		else
@@ -96,12 +92,12 @@ void permute_with_repetition(char  sol[], char arr[], int index, int k)
 char * combinations(char poss_data[], char arr[], int start, int end, int index, int k)
 {
 	if (index == k) {
-		char sol[16];
-		permute_with_repetition(sol, arr, 0, 15);
+		char sol[LENGTH];
+		permute_with_repetition(sol, arr, 0, LENGTH);
 		return arr;
 	}
 	
-	for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
+	for (int i = start; i < end && end - i  >= k - index; i++) {
 		arr[index] = poss_data[i];
 		combinations(poss_data, arr, i + 1, end, index + 1, k);
 	}
@@ -115,9 +111,9 @@ int main ()
 
 	//first we need to choose from 36 only 16 possible characters
 	//then we need to find all permutations with repetition of them.
-	char poss[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-	char sol[16];
-	combinations(poss, sol, 0, 35, 0, 16); 
+	char poss[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char sol[LENGTH];
+	combinations(poss, sol, 0, VALID, 0, LENGTH); 
 
 		
 	return 0;
