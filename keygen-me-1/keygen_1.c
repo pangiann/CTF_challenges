@@ -43,7 +43,7 @@ int ord(int c)
 
 // The tricky part about validate_key is to notice that this function actually operates a modulo with 36. 
 // If we use gdb we'll see that multiplying by 0x38e38e39h and right shifting 3 bits results in division by 36.
-bool validate_key(char sol[], int last)
+bool validate_key(char sol[])
 {
 	int i = 0;
 	int x = 0;
@@ -77,7 +77,7 @@ void permute_with_repetition(char  sol[], char arr[], int index, int k)
 		sol[index] = arr[i];
 
 		if (index == k - 1) {
-			if( validate_key(sol, k))
+			if( validate_key(sol))
 					printf("%s\n", sol);
 		}
 		else
