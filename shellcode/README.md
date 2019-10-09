@@ -22,7 +22,8 @@ and gain shell access we will grant privileges. As a result, we will be capable 
 More about linux file permissions and sgid [here]
 
 > # Setting up the environment:
-First of all you need to download the executable and the flag from my git repository [here](https://github.com/giannoulispanagiotis/picoCTF-2018-wiretup/tree/master/shellcode)
+First of all you need to download the executable and the flag from my git repository [here](https://github.com/giannoulispanagiotis/picoCTF-2018-wiretup/tree/master/shellcode).
+
 Now we need to set up the permissions for both of the files to create the right scenario.
 
 1. For the executable file vuln:
@@ -62,9 +63,13 @@ We want to find what it is inside register eax before we call it so we set a bre
 > # Crafting Shellcode
 I will try to explain it in brief. First create shellcode.asm with the following code:
 (Remember, memory is upside down, so when we want to push in the stack a string e.g. /bin/sh\0 we have to do it like that:
+
 push \0 (null)
+
 push //sh in hex
+
 push /bin in hex
+
 In 32 bit systems,  a memory block has a 4 bytes size, so we split our string. We also use 2 '//' so that we cover the whole block(4 bytes - '/sh' is 3 bytes), otherwise there will be something else in the 4th byte that we don't want to. /bin/sh and /bin//sh have no difference.
 
 ```asm
@@ -89,11 +94,16 @@ Our function is:
 ```
 
 This means we're passing the following:
-eax // Syscall of execve == 11 == 0xb
-ebx // Arg#1: pointer to the program string ("/bin//sh")
-ecx // Arg#2: pointer to the argunments array
-(argv[0] = "/bin//sh" , argv[1] = NULL)
-edx // Arg#3: pointer to the environment array (NULL)
+
+> eax // Syscall of execve == 11 == 0xb
+
+> ebx // Arg#1: pointer to the program string ("/bin//sh")
+
+> ecx // Arg#2: pointer to the argunments array
+
+*(argv[0] = "/bin//sh" , argv[1] = NULL)*
+
+> edx // Arg#3: pointer to the environment array (NULL)
 
 To compile it use nasm:
 
