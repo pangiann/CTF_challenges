@@ -31,7 +31,7 @@ a C program.
 int system(const char *command)
 ```
 
-I'm not gonna explain ret2libc attack thoroughly in this write-up, but you can find the best explanation [here](https://www.shellblade.net/docs/ret2libc.pdf)
+I'm not gonna explain ret2libc attack thoroughly in this write-up, but you can find the best explanation [here](https://www.shellblade.net/docs/ret2libc.pdf).
 My purpose is to explain the solution of this challenge and to focus on some of the 
 obstacles that may arise as we tackle this challenge and how we can overcome them.
 
@@ -39,15 +39,15 @@ obstacles that may arise as we tackle this challenge and how we can overcome the
 
 First of all let's clear what aslr means. 
 ASLR = Address Space Layout Randomisation is a computer security technique involved in protection from buffer overflow attacks. 
-ASLR randomly arranges the address space positions of key data areas of a process, including the base of the executable and the poistions
+ASLR randomly arranges the address space positions of key data areas of a process, including the base of the executable and the positions
 of the stack, heap, and libraries.
 
-(That's from [Wikipedia:](https://en.wikipedia.org/wiki/Address_space_layout_randomization)
+(That's from [Wikipedia:](https://en.wikipedia.org/wiki/Address_space_layout_randomization))
 
 As a result, when ASLR is turned on, the addresses of the stack, etc will be randomized. Thus, it makes it for us very difficult to
 predict addresses that we may want to use during exploitation.
 
-> # Crafting payload
+
 
 Let's see what is happening in our program when we have ASLR enabled and what when disabled. 
 To disable ASLR:
@@ -61,16 +61,20 @@ To enable ASLR:
  ```
  When it is disabled we notice that addresses don't change.
  
- ![Screenshot from 2019-10-10 19-28-31](https://user-images.githubusercontent.com/37578272/66588021-43ff4200-eb94-11e9-97cb-e6891beffa64.png)
+ ![Screenshot from 2019-10-10 19-29-08](https://user-images.githubusercontent.com/37578272/66588084-64c79780-eb94-11e9-99e1-eedfca6e7a5c.png)
+ 
  
  But what happens when ASLR is enabled?
  
- ![Screenshot from 2019-10-10 19-29-08](https://user-images.githubusercontent.com/37578272/66588084-64c79780-eb94-11e9-99e1-eedfca6e7a5c.png)
+ ![Screenshot from 2019-10-10 19-28-31](https://user-images.githubusercontent.com/37578272/66588021-43ff4200-eb94-11e9-97cb-e6891beffa64.png)
 
 It seems that every time functions in libc are loaded at a different location. 
 Now that we understand what ASLR is let's get through the solution of this challenge in both ways. 
 
 We'll we start with the easy one.
+
+> # Crafting payload
+
 Going into gdb and disassembling our program we fine some nice stuff.
 Inside main function we notice that program calls a vuln function (probably vulnerable ;p).
 
@@ -98,7 +102,7 @@ A function will expect its first argument to be at ebp+8. Well, the system() fun
 ![Screenshot from 2019-10-10 20-18-41](https://user-images.githubusercontent.com/37578272/66591261-30a3a500-eb9b-11e9-8f19-ee371e928962.png)
 
 That's the situation in the stack before calling RET instruction. 
-When ret instruction is executed we jump to system() and ret address is poped. So esp  increases by 4 bytes. So, now we are 4 bytes away of 1st argument of system.
+When ret instruction is executed we jump to system() and ret address is poped. So esp  increases by 4 bytes. At this time, we are 4 bytes away of 1st argument of system.
 Then we have the prologue of system() :
 ```asm
 push ebp
@@ -148,7 +152,7 @@ With this command we can find libc version. In my system is:
 
 # Step 2: Identify libc base
 
-libc_base - runtime_address_of_func - symbol_address_of_func
+libc_base = runtime_address_of_func - symbol_address_of_func
 
 # Step 3: Find system() address
 
