@@ -203,7 +203,7 @@ This means we're passing the following:
 
 > rdx // Arg#3: pointer to the environment array (NULL)
 
-Something that may seem confusing is the sift right in rbx register. With this instruction we just throw away the first '/' and when we push rbx in the stack instead of this slash we have a null byte in the end of the string.
+Something that may seem confusing is the sift right in rbx register. With this instruction we just throw away the first '/'. When we push rbx in the stack, instead of this slash we have a null byte in the end of the string.
 By the way it's a good time here to search about little and big endian.
 
 To compile it use nasm:
