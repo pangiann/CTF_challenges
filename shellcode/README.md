@@ -165,8 +165,16 @@ python -c "print '`(for i in $(objdump -d shellcode.o | grep "^ " | cut -f2); do
 (cat payload; cat) | ./vuln
 ```
 > # 64bit systems
-Now let's play with 64bit systems. It's not that difficult, the only thing that changes is the shellcode.
-I don't thing we need to examine again assembly code of vuln. It's pretty much the same, of course registers are different and some instructions too but the bigger picture (that we want to focus on in this challenge) is the same. I will jump to the shellcode:
+Now let's play with 64bit systems. It's not that difficult, the only thing that changes is the shellcode. Now we need to download the source code and compile it to take the 64bit binary.
+You can download the program from [here](https://2018shell.picoctf.com/static/77b3483ed4e56701fa7db9c5bdea4d03/vuln.c).
+Compile it:
+```bash
+gcc -o vuln vuln.c -fno-stack-protector -z execstack
+```
+
+I don't thing we need to examine again assembly code of vuln. It's pretty much the same, of course registers are different and some instructions too but the bigger picture (that we want to focus on in this challenge) is the same.
+
+I will jump to the shellcode:
 
 ```asm
 section .text
