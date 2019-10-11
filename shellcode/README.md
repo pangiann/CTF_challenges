@@ -20,7 +20,7 @@ You need to have some basic knowledge about C, gcc, linux command line, linux fi
 We have access to a system with an executable binary and a txt file containing the flag. The txt file is owned by a group 
 that we are not members, so we don't have access. However, the executable binary is owned from tha same group and it has the sgid bit set. If we exploit it
 and gain shell access we will grant privileges. As a result, we will be capable of reading the flag.txt to find the solution.
-More about linux file permissions and sgid [here]
+More about linux file permissions[here](https://www.geeksforgeeks.org/permissions-in-linux/)and sgid [here](https://www.geeksforgeeks.org/setuid-setgid-and-sticky-bits-in-linux-file-permissions/) 
 
 > # Setting up the environment:
 First of all you need to download the executable and the flag from my git repository [here](https://github.com/giannoulispanagiotis/picoCTF-2018-wiretup/tree/master/shellcode).
