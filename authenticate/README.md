@@ -156,7 +156,7 @@ Man page of printf tells us about %n:
 
 Ohhh that's too serious. "%n" let us write things in memory. For example:
 
-printf("Hello World%n", var): writes to variable var length of Hello World (11). Here, we don't have second argument, if we could find where in the stack were those printed values we saw above, with fgets we could parse the address of authenticated and with %n we could write to it. 
+printf("Hello World%n", &var): writes to var the length of Hello World (=11). Here, we don't have second argument, if we could find where in the stack were those printed values we saw above, with fgets we could parse the address of authenticated and with %n we could write to it. 
 
 Let's test as input this: AAAAAAAA %x %x %x %x %x %x %x %x %x %x %x %x %x.
 
@@ -169,7 +169,9 @@ python -c 'print "\x4c\xa0\x04\08" + "AAAA" + "%x "*11' | ./auth
 ```
 ![Screenshot from 2019-10-11 22-18-43](https://user-images.githubusercontent.com/37578272/66678683-1fc76200-ec75-11e9-988c-cf28b3053e14.png)
 
-And it's true. Therefor, we change the last "%x" with a "%n". So in the address: 0x0804a04c %n will print length of \x4c\xa0\x04\08AAAA"%x "*10. Autenticated will be modified and we'll get the flag. Let's do it. 
+And it's true. Therefor, we change the last "%x" with a "%n". So in the address: 0x0804a04c %n will print length of \x4c\xa0\x04\08AAAA"%x "*10. 
+
+Autenticated will be modified and we'll get the flag. Let's do it. 
 
 Our exploit:
 ```bash
