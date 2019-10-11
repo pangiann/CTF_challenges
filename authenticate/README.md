@@ -145,7 +145,7 @@ Dump of assembler code for function read_flag:
 End of assembler dump.
 ```
 In this instruction: **0x080486ea <+6>:	mov    eax,ds:0x804a04c**  we notice an address(data segment). 0x804a04c is an address of a global variable called authenticated. Authenticated is initialized to zero. We then see, **test eax, eax**.
-So, if we  modify authenticated variable, we will call flag function, which would give us the flag.
+So, if we  modify authenticated variable, test will enable ZF(zero flag) and  we will jump to the flag function, which would give us the flag.
 How can we modify it?
 
 We know the address of variable (This instruction is hardcoded which means that authenticated variable will always be on this address, and this makes it easier for us--ASLR is disabled--), and we know that printf is a vulnerable function right now.
