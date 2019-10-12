@@ -107,7 +107,7 @@ Hmm, at first sight we can't find something wrong in this code (there is not get
 
 So, if our input is hello_world (like above) everything is gonna be alright:
 printf("hello_world") gives us hello_world.
-Think about it for minute before you see the solution.
+Think about it for a minute before you see the solution.
 
 If we parse as an argument something like "%d %d %d %d", what's going to happen?
 
@@ -118,7 +118,7 @@ However, we haven't parsed 2nd argument inside printf, hence the integers that i
 ![Screenshot from 2019-10-11 21-37-10](https://user-images.githubusercontent.com/37578272/66677581-9d3da300-ec72-11e9-9e37-d96a8c2dba01.png)
 
 
-Where in the stack are those hex values? We're gonna find soon. But first, we didn't say how we are going to get this flag. 
+Where in the stack are those hex values? We'll find out in a minute. But first, we didn't say how we are going to get this flag. 
 Let's examine read_flag function.
 
 ```asm
