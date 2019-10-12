@@ -9,7 +9,7 @@
 > # Introduction
 In this challenge our goal is to overwrite the Global Offset Table and redirect program execution
 
-If you don't know what GOT and PLT are, there is a very good explanation [here](https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html)
+If you don't know what GOT and PLT are, there is a very good explanation [here](https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html).
 
 In brief, most programs call some functions that are included in libraries (e.g. printf in libc library). However, we notice that
 processor doesn't call instantly printf function, but instruction pointer goes first to procedure link table (printf@plt). 
@@ -21,8 +21,8 @@ If we go to the address that pointer points to we find
 the real address of printf.
 
 It's important to mention that this procedure happens when we've already called printf at least once. If we haven't called printf 
-befor, we need to trigger the first lookup. You can find what happens exactly in the link above.
-For the attack, what matters is that program makes a jump to andress, which location we know. (remember the pointer!! and the dereference our processor does first to jump to the resulting address)
+before, we need to trigger the first lookup. You can find what happens exactly in the link above.
+For the attack, what matters is that program makes a jump to an address, which location we know. (remember the pointer and the dereference our processor does first, to jump to the resulting address)
 
 Let's disassemble the binary with gdb and see all this stuff I've told you so far.
 
@@ -66,7 +66,6 @@ Dump of assembler code for function main:
    0x080485de <+122>:	push   eax
    0x080485df <+123>:	call   0x8048420 <sprintf@plt>
    0x080485e4 <+128>:	add    esp,0x10
---Type <RET> for more, q to quit, c to continue without paging--
    0x080485e7 <+131>:	sub    esp,0xc
    0x080485ea <+134>:	lea    eax,[ebp-0x10c]
    0x080485f0 <+140>:	push   eax
@@ -126,9 +125,9 @@ But, again if we change the value inside 0x804a014 we could make great things.
 Here, I want to mention to you to check about RELRO, ASLR, DEP, PIE that could make our job too difficult. Some of them in this binary are disabled
 and we can hardcode the addresses and also write to GOT(--> partial RELRO)
 
-The program kindly allows us to write an arbitrary DWORD(whatever it is, could be an address too) to an arbitrary address. Per
+The program kindly allows us to write an arbitrary DWORD(whatever it is, could be an address too) to an arbitrary address. 
 Hmm, only 4 bytes. We can't inject a shellcode. 
-Thinking some hour of what to do, I searched the functions that are included in this program and look what I found:
+Thinking some time of what to do, I searched the functions that are included in this program and look what I found:
 ```bash
 objdump -t auth
 ```
