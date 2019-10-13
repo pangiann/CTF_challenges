@@ -42,7 +42,7 @@ int hexadecimalToDecimal(char hexVal[])
 int main ()
 {
 	
-	char xorData[] = "2906164f2b35301e511b5b144b085d2b56475750164d51515d";
+	char secretBuffer[] = "2906164f2b35301e511b5b144b085d2b56475750164d51515d";
 	char message[] = "You have now entered the Duck Web, and you're in for a honkin' good time.";
 
 
@@ -50,10 +50,10 @@ int main ()
 
 	char data[] = "00";
 
-	for (int i = 0, j = 0; i < strlen(xorData) - 1; i+=2, j++) {
+	for (int i = 0, j = 0; i < strlen(secretBuffer) - 1; i+=2, j++) {
 		
-		data[0] = xorData[i];
-		data[1] = xorData[i+1];
+		data[0] = secretBuffer[i];
+		data[1] = secretBuffer[i+1];
 		//int val = hexadecimalToDecimal(data);
 
 
