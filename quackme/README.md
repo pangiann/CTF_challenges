@@ -133,7 +133,7 @@ do_magic function seems to be the one we're intrested for.
 \           0x08048714      c3             ret
 ```
 
-Okay, the eye goes straight to this instruction: **0x080486f8      68ab880408     push str.You_are_winner     ; 0x80488ab ; "You are winner!" ; const char *s**
+Okay, the eye goes straight to this instruction: **0x080486f8      68ab880408     push str.You_are_winner     ; 0x80488ab ; "You are winner!" ; const char *s **
 
 How can we go there in order to win? 
 var_1ch which is ebp - 0x1c (a value in the stack) is compared to 0x19 (decimal 25).
