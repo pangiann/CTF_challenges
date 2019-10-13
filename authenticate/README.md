@@ -1,4 +1,4 @@
-# Write-up for shellcode challenge
+# Write-up for authenticate challenge
 # PicoCTF_2018: authenticate
 
 **Category:** Binary Exploitation
