@@ -162,8 +162,8 @@ Hmm, that's interesting. Similarly, if we write **printf("%134514091d", var)** w
 So, we can write to memory an address like 0x080485ab. But, it takes time to print so many spaces. We are engineers and we can find a faster way to do this. 
 We can write two bytes at a time. So first 85ab and then 0804. 
 Before that, ofcourse we have to follow the same procedure as the previous challenge with format string attack:
-  -add to the input the address that we want to overwrite
-  -and then find when we hit this address. 
+  - add to the input the address that we want to overwrite
+  - and then find when we hit this address. 
   
 When we find those info we can start:
 
