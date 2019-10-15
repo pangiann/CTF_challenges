@@ -131,7 +131,7 @@ Let's do this thing. It's not that easy.
 From the first format string attack we know how to modify a variable and what **%n** does. But, now we want to write to address of
 puts@got.plt the address of vuln. So we want to write this number: 0x080485ab in hex, and 134514091 in decimal. Based on what we know about %n
 it's impossible to write before %n such a big input. Unfortunately , buffer is not that big.
-Have you ever heard about format in printf?
+Have you ever heard about format in printf? ([format](https://en.wikipedia.org/wiki/Printf_format_string))
 For example:
 ```C
 #include <stdio.h>
