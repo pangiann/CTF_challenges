@@ -1,4 +1,4 @@
-# Write-up for shellcode challenge
+# Write-up for got-2-learn-libc challenge
 # PicoCTF_2018: got-2-learn-libc
 
 **Category:** Binary Exploitation
