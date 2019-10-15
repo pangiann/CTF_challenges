@@ -113,7 +113,7 @@ We know that with printf and %n we can write arbitrary data to arbitrary locatio
 We want for sure to go back to system function but with another argument. How do we pass another argument to system? 
 Sometimes things are so simple that we can't see them lying in front of us.
 
-# >First step: Global Offset Table && code execution redirection
+> # First step: Global Offset Table && code execution redirection
 
 If you don't know about GOT and PLT and the way to exploit them see [here](https://github.com/giannoulispanagiotis/picoCTF-2018-wiretup/tree/master/got-shell%3F).
 First of all, we want to change **puts@got.plt** address with the address of vuln. We want to go back to the start. 
@@ -125,7 +125,7 @@ Answer: We can pass from stdin whatever argument we want (e.g. cat flag.txt).
 
 Now we have a plan!!!
 
-# >Crafting the payload
+> # Crafting the payload
 
 Let's do this thing. It's not that easy. 
 From the first format string attack we know how to modify a variable and what **%n** does. But, now we want to write the address of vuln to the  address of
