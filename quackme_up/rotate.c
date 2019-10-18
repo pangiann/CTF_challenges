@@ -2,7 +2,7 @@
 #include <string.h>
 
 #define INT_BITS 8
-#define ROL 4
+#define ROR 4
 int leftRotate(int n, unsigned int d)
 {
 	return (n << d) | (n >> (INT_BITS - d));
@@ -29,7 +29,7 @@ int main ()
 		data[1] = hex[i+1];
 		int val = (int) strtol(data, NULL, 16);
 		int n = val ^ 22;
-		printf("%c", eightbits(leftRotate(n, ROL)));
+		printf("%c", eightbits(rightRotate(n, ROR)));
 		i += 2;
 	}
 	putchar('\n');
