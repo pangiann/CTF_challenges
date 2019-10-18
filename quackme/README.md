@@ -181,7 +181,7 @@ sekrutBuffer is some binary data, some hex values.
 
 [s] is the address of our input.
 
-So, the first time offset(counter) is zero and movzx movs in ecx the first byte of the binary_data and in eax the first byte of our input.
+So, the first time offset(counter) is zero and movzx sends to ecx the first byte of the binary_data and in eax the first byte of our input.
 
 Then the most crucial instruction happens:
 ```ams
