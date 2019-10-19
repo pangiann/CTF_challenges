@@ -9,8 +9,8 @@ You can find the program in /problems/quackme-up_2_bf9649c854a2615a35ccdc3660a31
 
 First of all, let's execute the program:
 
-```bash
-./main
+```console
+user@user:~/$ ./main
 
 We're moving along swimmingly. Is this one too fowl for you?
 Enter text to encrypt: [input]
@@ -21,7 +21,9 @@ That's all folks.
 
 Okay, maybe we have to crack some ciphertext.
 I tried as input: **picoCTF** and I got the following:
-```bash
+```console
+user@user:~/$ ./main
+
 We're moving along swimmingly. Is this one too fowl for you?
 Enter text to encrypt: picoCTF
 Here's your ciphertext: 11 80 20 E0 22 53 72
