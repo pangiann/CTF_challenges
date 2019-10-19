@@ -134,14 +134,39 @@ b8589b0af7
 ```
 
 
+At virtual address 0x00000000004007e1 we would like to insert 0xb8589b0af7. We have to  find first the offset in the binary itself.
 
+```console
+user@user:~/ objdump -t be-quick-or-be-dead-2
 
+be-quick-or-be-dead-2:     file format elf64-x86-64
 
-Our code starts at 00000000004005a0 and our instruction is at 0x00000000004007a9. 
+SYMBOL TABLE:
+0000000000400238 l    d  .interp	0000000000000000              .interp
+0000000000400254 l    d  .note.ABI-tag	0000000000000000              .note.ABI-tag
+0000000000400274 l    d  .note.gnu.build-id	0000000000000000              .note.gnu.build-id
+0000000000400298 l    d  .gnu.hash	0000000000000000              .gnu.hash
+00000000004002b8 l    d  .dynsym	0000000000000000              .dynsym
+0000000000400390 l    d  .dynstr	0000000000000000              .dynstr
+00000000004003f6 l    d  .gnu.version	0000000000000000              .gnu.version
+0000000000400408 l    d  .gnu.version_r	0000000000000000              .gnu.version_r
+0000000000400428 l    d  .rela.dyn	0000000000000000              .rela.dyn
+0000000000400440 l    d  .rela.plt	0000000000000000              .rela.plt
+00000000004004e8 l    d  .init	0000000000000000              .init
+0000000000400510 l    d  .plt	0000000000000000              .plt
+0000000000400590 l    d  .plt.got	0000000000000000              .plt.got
+00000000004005a0 l    d  .text	0000000000000000              .text
+0000000000400914 l    d  .fini	0000000000000000              .fini
+.
+.
+.
+```
+Our code starts at 00000000004005a0 and our instruction is at 0x00000000004007e1. 
+
 
 ```console
 user@user:~/ readelf --wide -S be-quick-or-be-dead-1
-There are 31 section headers, starting at offset 0x1c90:
+There are 31 section headers, starting at offset 0x1ca8:
 
 Section Headers:
   [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
@@ -159,23 +184,23 @@ Section Headers:
   [11] .init             PROGBITS        00000000004004e8 0004e8 00001a 00  AX  0   0  4
   [12] .plt              PROGBITS        0000000000400510 000510 000080 10  AX  0   0 16
   [13] .plt.got          PROGBITS        0000000000400590 000590 000008 00  AX  0   0  8
-  [14] .text             PROGBITS        00000000004005a0 0005a0 000342 00  AX  0   0 16
-  [15] .fini             PROGBITS        00000000004008e4 0008e4 000009 00  AX  0   0  4
-  [16] .rodata           PROGBITS        00000000004008f0 0008f0 0000e8 00   A  0   0 16
-  [17] .eh_frame_hdr     PROGBITS        00000000004009d8 0009d8 00006c 00   A  0   0  4
-  [18] .eh_frame         PROGBITS        0000000000400a48 000a48 0001d4 00   A  0   0  8
+  [14] .text             PROGBITS        00000000004005a0 0005a0 000372 00  AX  0   0 16
+  [15] .fini             PROGBITS        0000000000400914 000914 000009 00  AX  0   0  4
+  [16] .rodata           PROGBITS        0000000000400920 000920 0000e8 00   A  0   0 16
+  [17] .eh_frame_hdr     PROGBITS        0000000000400a08 000a08 000074 00   A  0   0  4
+  [18] .eh_frame         PROGBITS        0000000000400a80 000a80 0001f4 00   A  0   0  8
   [19] .init_array       INIT_ARRAY      0000000000600e10 000e10 000008 00  WA  0   0  8
   [20] .fini_array       FINI_ARRAY      0000000000600e18 000e18 000008 00  WA  0   0  8
   [21] .jcr              PROGBITS        0000000000600e20 000e20 000008 00  WA  0   0  8
   [22] .dynamic          DYNAMIC         0000000000600e28 000e28 0001d0 10  WA  6   0  8
   [23] .got              PROGBITS        0000000000600ff8 000ff8 000008 08  WA  0   0  8
   [24] .got.plt          PROGBITS        0000000000601000 001000 000050 08  WA  0   0  8
-  [25] .data             PROGBITS        0000000000601060 001060 00005b 00  WA  0   0 32
-  [26] .bss              NOBITS          00000000006010bc 0010bb 00000c 00  WA  0   0  4
-  [27] .comment          PROGBITS        0000000000000000 0010bb 000035 01  MS  0   0  1
-  [28] .shstrtab         STRTAB          0000000000000000 001b80 00010c 00      0   0  1
-  [29] .symtab           SYMTAB          0000000000000000 0010f0 0007b0 18     30  47  8
-  [30] .strtab           STRTAB          0000000000000000 0018a0 0002e0 00      0   0  1
+  [25] .data             PROGBITS        0000000000601060 001060 00005a 00  WA  0   0 32
+  [26] .bss              NOBITS          00000000006010bc 0010ba 00000c 00  WA  0   0  4
+  [27] .comment          PROGBITS        0000000000000000 0010ba 000035 01  MS  0   0  1
+  [28] .shstrtab         STRTAB          0000000000000000 001b9c 00010c 00      0   0  1
+  [29] .symtab           SYMTAB          0000000000000000 0010f0 0007c8 18     30  47  8
+  [30] .strtab           STRTAB          0000000000000000 0018b8 0002e4 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),
@@ -184,21 +209,19 @@ Key to Flags:
 ```
 We can see that offset of .text is 0005a0 so instruction's offset is:
 ```
- 00000000004005a0 - 0x0005a0 + 0x00000000004007a9 = 0x0007a9
+ 00000000004005a0 - 0x0005a0 + 0x00000000004007e1 = 0x0007e1
  ```
  
-That's it we know everything to patch this program. 
+> # Crafting the script
+
 ```bash
 #!/bin/bash
 
-cp be-quick-or-be-dead-1 be-quick-or-be-dead-1_patched
-chmod +x be-quick-or-be-dead-1_patched
-
-rasm2 'mov eax, 0xeb866516' | xxd -p -r | dd conv=notrunc of=be-quick-or-be-dead-1_patched bs=1 seek=$((0x7a9)) 2>/dev/null
-# xxd with -r option converts hex to binary and with -p prints it to the stdout
-# dd just edits the binary
-./be-quick-or-be-dead-1_patched | tail -1 
+cp -p be-quick-or-be-dead-2 be-quick-or-be-dead-2_patched
+chmod +x be-quick-or-be-dead-2_patched
+rasm2 'mov eax, 4144667480' | xxd -p -r | dd conv=notrunc of=be-quick-or-be-dead-2_patched bs=1 seek=$((0x7e1)) 2>/dev/null
+./be-quick-or-be-dead-2_patched | tail -1
 ```
-More about dd see [here](https://www.geeksforgeeks.org/dd-command-linux/) and in the [man page](http://man7.org/linux/man-pages/man1/dd.1.html).
+
 
 Congrats! We did it. 
