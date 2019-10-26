@@ -106,21 +106,21 @@ In the first lines, program opens flag.txt file but we see 2 very important line
 First of all, we have to clear something. If you know how C programs lie in memory you would see that `win()` function takes two arguments
 . These values are stored at ebp + 0x8 and ebp + 0xc (ebp + 0x10 if there  were more etc.). 
 
-So, to print the flag arg1 must be 0xdeadbeef and arg2 0xdeadc0de.
+To print the flag, arg1 must be 0xdeadbeef and arg2 0xdeadc0de.
 
 How could we intervene to those values?
 
 Think about it...
-Before we call RET instruction inside `vuln`  esp contains X address and program is at address X + 0x4.  We've changed return address in order to jump to `win`.
-With ret instruction we pop return address from stack, so now inside esp we find X + 0x4. 
+We assume that before we call RET instruction inside `vuln`  **esp** contains **X** address. We've changed return address in order to jump to `win`.
+With ret instruction we pop return address from stack, so now inside **esp** we find **X + 0x4**. 
 Then, prolog of `win` function comes:
 ```asm
 0x080485cb <+0>:	push   ebp
 0x080485cc <+1>:	mov    ebp,esp
 ```
 
-We push ebp, so esp is again X and then ebp of win function == esp of vuln function just before ret instruction which is ebp + 0x4 of vuln function. 
-So, quick mats we have to place the 2 arguments at ebp + 0xc and ebp + 0x10. That's it, buffer overflow technique exactly the same as in the previous challenge. 
+We push **ebp**, so **esp** is again **X**. Ebp of `win` function is equal to esp of `vuln` function just before ret instruction which is **ebp + 0x4** of `vuln` function. 
+Quick maths... we have to place the 2 arguments at **ebp + 0xc** and **ebp + 0x10** (ebp of `vuln`). That's it, buffer overflow technique is exactly the same as in the previous challenge. 
 
 > # Crafting the exploit
 
