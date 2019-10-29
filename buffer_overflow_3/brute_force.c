@@ -65,8 +65,7 @@ int main (int argc, char* argv[])
 				printf("exploit = %s\n", exploit);
 				write(fdin[1], exploit, sizeof(exploit)+1);
 
-				
-			    wait(NULL);	
+				wait(NULL);	
 				
 				char buffer[100];
 				char buffer1[256];
