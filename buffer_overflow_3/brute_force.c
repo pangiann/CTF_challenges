@@ -69,35 +69,29 @@ int main (int argc, char* argv[])
 			    wait(NULL);	
 				
 				char buffer[100];
-				char buffer2[50];
-				char buffer3[256];
+				char buffer1[256];
 				
 			
 				
-				int nread1 = read(fdout[0], buffer, 47);
-				if (nread1 != 47) {
+				int nread1 = read(fdout[0], buffer, 56);
+				if (nread1 != 56) {
 					fprintf(stderr, "SEG fault\n");
 					exit(11);
 				}
 				else 
 					buffer[nread1] = '\0';
-				int nread2 = read(fdout[0], buffer2, 9); 
-				if (nread2 != 9) {
-					fprintf(stderr, "SEG fault\n");
-					exit(11);
-				}
-				else 
-					buffer2[nread2] = '\0';
 				
-				int nread3 = read(fdout[0], buffer3, sizeof(buffer3));
-				if (nread3 > 0)
-					buffer3[nread3] = '\0';
+				int nread2 = read(fdout[0], buffer1, sizeof(buffer1));
+				if (nread2 > 0)
+					buffer1[nread2] = '\0';
+				else
+					buffer1[0] = '\0';
 
-				if (buffer3[0] == 'O' && buffer3[1] == 'k') {
-					printf("\nProcess: (%d), stdout1: %s\n", pid, buffer);
+				if (buffer1[0] == 'O' && buffer1[1] == 'k') {
+					printf("\nProcess: (%d), stdout1: %s\n", pid, buffer1);
 					break;
 				}
-				
+				close(fdin[1]);
 				close(fdout[0]);
 			
 			}
