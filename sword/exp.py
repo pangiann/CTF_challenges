@@ -1,3 +1,31 @@
+
+
+
+
+
+'''
+SOS message:
+
+===============================================================================================
+This exploit refers to a slightly different C program (and binary). 
+Sword2 let us create more than 7 swords. I've changed this in order to free 8 swords and
+avoid tcache bins and experiment with fastbin attacks and also solve it with the most 
+recent glibc version. (libc version provided on the site is older and doesn't 
+contain tcache bins). However, exp2.py solves the problem 
+with the most recent glibc version (we don't care about fastbins or tcache bins). 
+On the other hand, exploit.py solves this challenge with the libc version that is given 
+with the binary on picoctf site.
+===============================================================================================
+
+Thanks!
+'''
+
+
+
+
+
+
+
 #!/usr/bin/python
 from struct import *
 from pwn import *
