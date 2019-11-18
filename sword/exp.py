@@ -41,7 +41,7 @@ read_GOT = e.got['read']
 
 
 s1 = "A"*32
-sevenForges()
+eightForges()
 hardenSword(7, s1)
 
 eightDestroys()
