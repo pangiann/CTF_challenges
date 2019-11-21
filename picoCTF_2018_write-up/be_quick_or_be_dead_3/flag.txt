@@ -1,0 +1,2 @@
+picoCTF{dynamic_pr0gramming_ftw_b5c45645}
+
